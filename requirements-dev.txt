@@ -1,0 +1,7 @@
+ruff
+pytest
+httpx
+sqlalchemy
+databases[aiosqlite]
+python-dotenv
+pydantic-settings
