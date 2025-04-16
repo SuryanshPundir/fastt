@@ -39,6 +39,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from socialapi.database import database
 from socialapi.routers.post import router as post_router
+from socialapi.routers.user import router as user_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

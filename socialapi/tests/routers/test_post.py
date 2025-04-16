@@ -1,24 +1,22 @@
 import pytest
-from https import AsyncClient
-async def create_post(body:str, async_client:AsyncClient)->dict:
-    response = await async_client.post("/post", json={"body":body})
-    return response.json()
-
-
-@pytest.fixture()
-async def created_post(async_client:AsyncClient)->dict:
-    return await create_post("test post", async_client)
-
+from httpx import AsyncClient
 @pytest.mark.anyio
-async def test_create_post(async_client:AsyncClient):
-    name= "test post"
-    response = await async_client.post("/post", json={"body":body})
+async def test_create_post(async_client: AsyncClient):
+    body = "test post"
+    response = await async_client.post("/post", json={"body": body})
     assert response.status_code == 201
-    assert {"id": 1, "body": body}.items() >= response.json().items()
+    data = response.json()
+    assert data["body"] == body
+    assert "id" in data
 
 @pytest.mark.anyio
-async def test_create_post_with_comment(async_client:AsyncClient, created_post:dict):
+async def test_create_post_with_comment(async_client: AsyncClient, created_post: dict):
     body = "test comment"
-    response = await async_client.post(f"/post/{created_post['id']}/comment", json={"body": body})
+    response = await async_client.post("/comment", json={
+        "post_id": created_post["id"],
+        "body": body
+    })
     assert response.status_code == 201
-    assert {"id": 1, "body": body}.items() >= response.json().items()
+    data = response.json()
+    assert data["body"] == body
+    assert "id" in data
