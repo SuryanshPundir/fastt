@@ -5,3 +5,7 @@ sqlalchemy
 databases[aiosqlite]
 python-dotenv
 pydantic-settings
+python-jose
+python-multipart
+passlib[bcrypt]
+pytest-mock

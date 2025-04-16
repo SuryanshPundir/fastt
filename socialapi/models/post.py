@@ -6,12 +6,19 @@ class UserPostIn(BaseModel):
 class UserPost(UserPostIn):
     id:int
 
+    class config:
+        orm_mode=True
+
+
 class CommentIn(BaseModel):
     body:str
     post_id:int
 
 class CommentOut(CommentIn):
     id:int 
+
+    class config:
+        orm_mode=True
 
 class UserPostWithComments(BaseModel):
     post: UserPost
