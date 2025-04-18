@@ -1,8 +1,9 @@
-
-
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Depends
+from typing import Annotated
 from socialapi.database import post_table, comment_table, database
 from socialapi.models.post import UserPost, UserPostIn, CommentOut, CommentIn, UserPostWithComments
+from socialapi.models.user import User
+from socialapi.security import get_current_user, oauth2_scheme
 
 router = APIRouter()
 
@@ -11,21 +12,25 @@ async def find_post(post_id: int):
     query= post_table.select().where(post_table.c.id==post_id)
     return await database.fetch_one(query)
 
-@router.post("/post", response_model=UserPost, status_code=201)
-async def create_post(post: UserPostIn):
-    data=post.model_dump()
-    query= post_table.insert().values(data)
-    last_record_id=await database.execute(query)
-    return {**data, "id": last_record_id}
-
 
 @router.get("/post", response_model=list[UserPost])
 async def get_all_posts():
     query= post_table.select()
     return await database.fetch_all(query)
 
+
+@router.post("/post", response_model=UserPost, status_code=201)
+async def create_post(post: UserPostIn, current_user: Annotated[User, Depends(get_current_user)]):
+
+    data=post.model_dump()
+    query= post_table.insert().values(data)
+    last_record_id=await database.execute(query)
+    return {**data, "id": last_record_id}
+
+
+
 @router.post("/comment", response_model=CommentOut, status_code=201)
-async def create_comment(comment: CommentIn):
+async def create_comment(comment: CommentIn, current_user: Annotated[User, Depends(get_current_user)]):
     post=await find_post(comment.post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")

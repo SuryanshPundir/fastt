@@ -5,7 +5,7 @@ class UserPostIn(BaseModel):
 
 class UserPost(UserPostIn):
     id:int
-
+    user_id:int
     class config:
         orm_mode=True
 
@@ -16,6 +16,7 @@ class CommentIn(BaseModel):
 
 class CommentOut(CommentIn):
     id:int 
+    user_id:int
 
     class config:
         orm_mode=True
